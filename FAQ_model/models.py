@@ -4,6 +4,7 @@ from ckeditor.fields import RichTextField
 
 
 #Modelos FAQ
+'''Buscar el modelo de categorias y verificar si ya existe, si no crearlo'''
 class Categoria(models.Model):
     id = models.AutoField(primary_key = True)
     categoria = models.CharField(max_length=50)
@@ -15,21 +16,15 @@ class Categoria(models.Model):
 class FAQ(models.Model):
     id = models.AutoField(primary_key = True)
     titulo = models.CharField(max_length = 50)
+    
+    '''Verificar que libreria usan para las descripciones'''
     descripcion = RichTextField(blank=True, null=True)
+    
+    '''Buscar el modelo de las categorias si ya esta creado'''
     categorias = models.ForeignKey(Categoria, null=True, on_delete=models.SET_NULL,related_name='categoria_name')
+    
+    '''Buscar que modelo se relaciona al canal de venta con el usuario'''
     departamento = models.ManyToManyField(Group, related_name='grupo_departamento')
 
     def __str__(self):
         return self.titulo
-
-#Generador de tokens
-
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
